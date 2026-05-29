@@ -24,3 +24,14 @@ python scripts/discover_associations.py --niche "HVAC contractors" --city "Houst
 - Treat associations as relationship maps, not just event pages.
 - Prioritize event managers, executive directors, board presidents, sponsors, and recurring committee leads.
 - Keep member directories and event calendars as separate fields.
+## 2026 Outcome-First Update
+
+For association research, capture publication/distribution channels in addition to event pages: magazines, newsletters, flipbook directories, member directories, ad/sponsor pages, and official publication contacts.
+
+Treat associations as relationship maps. Prioritize executive directors, event managers, board presidents, chapter chairs, recurring committee leads, sponsor contacts, newsletter editors, and publication/ad contacts.
+
+Rank association opportunities with:
+
+```powershell
+python scripts/rank_opportunities.py --input reports/associations.csv --output reports/associations-ranked.csv
+```

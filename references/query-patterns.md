@@ -68,3 +68,23 @@ site:linkedin.com/company "[company name]" "[industry keyword]"
 "[profession]" society "[state]" conference
 site:.org "[niche]" "[city]" "events"
 ```
+## Outcome-First Query Additions
+
+Use when the business outcome is prospecting, sponsorship, speaking, or appointment-setting rather than generic research.
+
+```text
+[niche] "member directory" [year]
+[niche] "official publication"
+[niche] magazine newsletter association
+[niche] sponsor exhibitor list [year]
+[niche] "annual meeting" "registration"
+[niche] "webinar" "Zoom" association
+[event name] "sponsor" "contact"
+[event name] "speaker" "LinkedIn"
+[event name] "exhibitor" "company"
+[association name] "staff directory"
+[association name] "advertise" magazine
+[company] careers hiring founder LinkedIn [year]
+```
+
+For manufactured housing specifically, search for dealers/resellers and publication assets before raw park lists when the offer is marketing, AI, or lead generation.

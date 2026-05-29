@@ -23,3 +23,18 @@ python scripts/generate_event_report.py --events reports/mhi-events-normalized.c
 ## Source Policy
 
 Prefer official pages, Google SERP, professional association pages, 10times, and tightly scoped Eventbrite. Avoid broad AllEvents scans by default. Require explicit approval for authenticated LinkedIn automation, LinkedIn participant scraping, full Instagram follower scrapes, or paid runs above the configured cap.
+## 2026 Outcome-First Layer
+
+This repo now includes an outcome-first ranking layer for turning messy deep-research outputs into action maps. Treat Perplexity/Genspark reports as lead lists, not evidence. Verify important claims, rank opportunities, and produce action-ready outputs.
+
+New references:
+- `references/outcome-first-opportunity-mapping.md`
+- `references/niche-playbooks.md`
+
+New deterministic script:
+
+```powershell
+python scripts/rank_opportunities.py --input reports/events-normalized.csv --output reports/events-ranked.csv
+```
+
+The ranker supports manufactured housing, AI/VapiCon-style startup conferences, CPA/CPE, exit planning, HVAC/plumbing, and local business networking patterns by scoring ICP fit, access quality, timeliness, commercial intent, relationship leverage, and source confidence.

@@ -18,3 +18,18 @@ Confidence values:
 - `weak`: possible match; keep for manual review only.
 - `historical-reference`: prior-year or non-current event evidence.
 - `needs-manual-verification`: useful but incomplete evidence.
+## Opportunity Ranking Columns
+
+Ranked opportunity CSVs append:
+`opportunity_score,recommended_action,score_notes`
+
+Recommended action values:
+- `attend-now`
+- `sponsor-or-advertise`
+- `speaker-pitch`
+- `scrape-for-leads`
+- `watchlist`
+- `discard`
+
+Optional manual scoring input columns accepted by `scripts/rank_opportunities.py`:
+`icp_fit,access_quality,timeliness,commercial_intent,relationship_leverage`

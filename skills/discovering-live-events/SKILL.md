@@ -28,3 +28,14 @@ python scripts/dedupe_events.py --input reports/events-normalized.csv --output r
 - Use `confirmed`, `probable`, `weak`, `historical-reference`, or `needs-manual-verification` labels.
 - Avoid broad AllEvents scans by default.
 - Require explicit approval for paid runs above the configured cap.
+## 2026 Outcome-First Update
+
+If prior research is pasted as training context, read `references/outcome-first-opportunity-mapping.md` and use it to decide what matters. For known niches, read the relevant section of `references/niche-playbooks.md` before generating queries.
+
+Add ranking after dedupe:
+
+```powershell
+python scripts/rank_opportunities.py --input reports/events-deduped.csv --output reports/events-ranked.csv
+```
+
+Capture online summits, webinars, magazines, newsletters, member directories, and official publications when they create access to the ICP.
