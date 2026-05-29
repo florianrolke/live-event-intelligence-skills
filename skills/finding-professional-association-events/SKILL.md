@@ -35,3 +35,15 @@ Rank association opportunities with:
 ```powershell
 python scripts/rank_opportunities.py --input reports/associations.csv --output reports/associations-ranked.csv
 ```
+
+## Association-Level Query Mode
+
+When the user asks for local, regional, or national association events, generate queries with:
+
+```powershell
+python scripts/generate_event_queries.py --niche "family law" --city "Chicago" --state IL --year 2026 --association-levels local regional national --output reports/association-event-queries.csv
+```
+
+Local examples: city bar sections, county bar committees, lunches, breakfast meetings, Zoom/CLE sessions.
+Regional examples: state bar sections, AAML/AFCC chapters, state annual seminars, regional CLE conferences.
+National examples: ABA, AAML, AFCC, APFM, national institutes, sponsor/exhibitor pages.

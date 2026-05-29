@@ -39,3 +39,14 @@ python scripts/rank_opportunities.py --input reports/events-deduped.csv --output
 ```
 
 Capture online summits, webinars, magazines, newsletters, member directories, and official publications when they create access to the ICP.
+
+## Association-Level Event Discovery
+
+For local/regional/national association research, use `--association-levels` with any of: `local`, `regional`, `national`.
+
+```powershell
+python scripts/generate_event_queries.py --niche "family law" --city "Chicago" --state IL --year 2026 --association-levels local regional national --output reports/family-law-association-queries.csv
+python scripts/discover_events_serp.py --niche "family law" --city "Chicago" --state IL --year 2026 --association-levels local regional national --output data/family-law-association-serp.csv
+```
+
+Use this mode to find bar sections, state associations, chapters, committees, CLEs, annual meetings, webinars, sponsor pages, exhibitor lists, and recurring lunches/breakfasts.

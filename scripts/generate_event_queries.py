@@ -22,6 +22,7 @@ def generate_queries(
     companies: list[str] | None = None,
     people: list[str] | None = None,
     suburbs: list[str] | None = None,
+    association_levels: list[str] | None = None,
 ) -> list[dict[str, str]]:
     year = str(year or "").strip()
     queries: list[dict[str, str]] = []
@@ -82,6 +83,52 @@ def generate_queries(
             add("local_suburb_discovery", f'site:.org "{niche}" "{place}" "events"', "Find nonprofit/association calendars")
         if state:
             add("local_suburb_discovery", f'"{niche}" society "{state}" conference', "Find state society conferences")
+
+    levels = {level.lower() for level in _clean(association_levels)}
+    if levels:
+        if "local" in levels:
+            for place in places:
+                if not place:
+                    continue
+                for term in ["chapter", "section", "committee", "luncheon", "breakfast", "webinar", "CLE", "meeting"]:
+                    add(
+                        "local_association_discovery",
+                        f'"{niche}" "{term}" "{place}" {year}'.strip(),
+                        "Find local association chapters, committees, and recurring meetings",
+                    )
+                add(
+                    "local_association_discovery",
+                    f'"{place}" bar association "{niche}" events {year}'.strip(),
+                    "Find local bar/association event calendars when relevant",
+                )
+        if "regional" in levels:
+            region_terms = _clean([state, city])
+            for region in region_terms:
+                for term in ["state bar", "section", "chapter", "annual meeting", "conference", "seminar", "CLE"]:
+                    add(
+                        "regional_association_discovery",
+                        f'"{niche}" "{term}" "{region}" {year}'.strip(),
+                        "Find state/regional association conferences and education events",
+                    )
+            if state:
+                add(
+                    "regional_association_discovery",
+                    f'"{state}" "{niche}" association event calendar {year}'.strip(),
+                    "Find state association event calendars",
+                )
+        if "national" in levels:
+            for term in ["association", "institute", "academy", "section", "annual conference", "annual meeting", "sponsors", "exhibitors"]:
+                add(
+                    "national_association_discovery",
+                    f'"{niche}" national "{term}" {year}'.strip(),
+                    "Find national association events and sponsor/exhibitor assets",
+                )
+            for term in ["speakers", "sponsors", "exhibitors", "conference", "annual meeting"]:
+                add(
+                    "national_association_discovery",
+                    f'"{niche}" "{term}" United States {year}'.strip(),
+                    "Find national US association opportunities",
+                )
     return queries
 
 
@@ -99,12 +146,13 @@ def main():
     parser.add_argument("--companies", nargs="*", default=[])
     parser.add_argument("--people", nargs="*", default=[])
     parser.add_argument("--suburbs", nargs="*", default=[])
+    parser.add_argument("--association-levels", nargs="*", default=[])
     parser.add_argument("--output", default="")
     args = parser.parse_args()
     rows = generate_queries(
         args.niche, args.city, args.state, args.year, args.event_name, args.adjacent,
         args.asset_terms, args.official_domains, args.industry_publications, args.companies,
-        args.people, args.suburbs,
+        args.people, args.suburbs, args.association_levels,
     )
     if args.output:
         if args.output.lower().endswith(".json"):
