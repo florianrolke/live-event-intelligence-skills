@@ -1,0 +1,30 @@
+---
+name: discovering-live-events
+description: Find local or niche live events, conferences, expos, forums, conventions, trade shows, association meetings, and networking rooms for a client, niche, city, suburb, state, or date range. Use when Codex needs to discover upcoming or historical event opportunities and create an outreach-ready event list.
+---
+
+# Discovering Live Events
+
+## Workflow
+
+1. Read `references/cost-controls.md` before any paid actor use.
+2. Generate layered queries with `scripts/generate_event_queries.py`.
+3. Prefer official pages, association calendars, Google SERP, and 10times before broad event marketplaces.
+4. Save raw results under `data/` and normalized deliverables under `reports/`.
+5. Normalize with `scripts/normalize_events.py`, dedupe with `scripts/dedupe_events.py`, then report with `scripts/generate_event_report.py`.
+
+## Commands
+
+```powershell
+python scripts/generate_event_queries.py --niche "manufactured housing" --city "Las Vegas" --year 2026 --event-name "MHI 2026 Congress & Expo" --output reports/event-queries.csv
+python scripts/discover_events_serp.py --niche "manufactured housing" --city "Las Vegas" --year 2026 --output data/event-serp-results.csv
+python scripts/normalize_events.py --input data/event-serp-results.csv --output reports/events-normalized.csv
+python scripts/dedupe_events.py --input reports/events-normalized.csv --output reports/events-deduped.csv
+```
+
+## Guardrails
+
+- Do not claim a complete attendee list when the source is gated, app-only, or LinkedIn-restricted.
+- Use `confirmed`, `probable`, `weak`, `historical-reference`, or `needs-manual-verification` labels.
+- Avoid broad AllEvents scans by default.
+- Require explicit approval for paid runs above the configured cap.
