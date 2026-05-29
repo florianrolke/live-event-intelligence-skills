@@ -20,7 +20,10 @@ def generate_report(events: list[dict], contacts: list[dict] | None = None, titl
             place = ", ".join(v for v in [first_value(event, "venue"), first_value(event, "city"), first_value(event, "state")] if v)
             url = first_value(event, "event_url", "url")
             confidence = first_value(event, "confidence")
-            lines.append(f"- {name} | {date} | {place} | {confidence} | {url}")
+            score = first_value(event, "opportunity_score")
+            action = first_value(event, "recommended_action")
+            ranking = f" | score {score} | {action}" if score or action else ""
+            lines.append(f"- {name} | {date} | {place} | {confidence}{ranking} | {url}")
         lines.append("")
     if contacts:
         lines.append("## Contact Map")

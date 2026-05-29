@@ -44,14 +44,24 @@ def score_row(row: dict[str, str]) -> dict[str, str]:
 
     icp = as_int(row.get("icp_fit", ""), 0)
     if not icp:
-        if has_any(text, ["owner", "operator", "founder", "ceo", "president", "community", "dealer", "retailer", "advisor"]):
+        if has_any(text, [
+            "owner", "operator", "founder", "ceo", "president", "community", "dealer", "retailer", "advisor",
+            "attorney", "lawyer", "matrimonial", "family law", "divorce", "mediator", "judge", "judiciary",
+            "custody", "forensic", "valuation", "bar association", "cle",
+        ]):
             icp += 18
-        if has_any(text, ["manufactured", "mobile home", "voice ai", "exit planning", "cpe", "hvac", "plumbing"]):
+        if has_any(text, [
+            "manufactured", "mobile home", "voice ai", "exit planning", "cpe", "hvac", "plumbing",
+            "practice management", "family mediator", "aaml", "afcc", "aba family law",
+        ]):
             icp += 7
 
     access = as_int(row.get("access_quality", ""), 0)
     if not access:
-        if has_any(text, ["member directory", "exhibitor", "sponsor", "speaker", "attendee", "people", "staff directory"]):
+        if has_any(text, [
+            "member directory", "exhibitor", "exhibits", "sponsor", "speaker", "attendee", "people",
+            "staff directory", "registration", "agenda", "program", "committee", "faculty",
+        ]):
             access += 16
         if has_any(text, ["email", "phone", "linkedin", "contact", "calendar"]):
             access += 4
@@ -65,16 +75,23 @@ def score_row(row: dict[str, str]) -> dict[str, str]:
 
     commercial = as_int(row.get("commercial_intent", ""), 0)
     if not commercial:
-        if has_any(text, ["exhibitor", "sponsor", "advertise", "magazine", "newsletter", "paid", "dealer", "hiring", "funding"]):
+        if has_any(text, [
+            "exhibitor", "exhibits", "sponsor", "advertise", "magazine", "newsletter", "paid",
+            "dealer", "hiring", "funding", "registration fees", "industry partners", "business valuation",
+            "forensic accounting", "practice", "law firm",
+        ]):
             commercial += 12
         if has_any(text, ["conference", "expo", "trade show", "annual meeting"]):
             commercial += 3
 
     relationship = as_int(row.get("relationship_leverage", ""), 0)
     if not relationship:
-        if has_any(text, ["executive director", "president", "chair", "organizer", "program", "education", "chapter", "podcast host"]):
+        if has_any(text, [
+            "executive director", "president", "chair", "organizer", "program", "education", "chapter",
+            "podcast host", "section", "committee", "faculty", "moderator", "fellow",
+        ]):
             relationship += 13
-        if has_any(text, ["roundtable", "lunch", "webinar", "zoom", "committee"]):
+        if has_any(text, ["roundtable", "lunch", "luncheon", "reception", "breakfast", "webinar", "zoom", "committee"]):
             relationship += 2
 
     source = CONFIDENCE_POINTS.get(confidence, 0)

@@ -9,5 +9,6 @@ data/*.json
 reports/*.csv
 reports/*.json
 reports/*.html
+reports/*.md
 !data/.gitkeep
 !reports/.gitkeep
