@@ -17,3 +17,11 @@ Lessons from prior runs:
 - Actual latest run metadata: status `SUCCEEDED`, usageTotalUsd `$0.0235`, 5 SERP dataset items.
 - On Windows, run repo scripts as modules when imports reference `scripts.*`: `python -m scripts.run_apify_event_actor ...`.
 - PowerShell 5 `Set-Content -Encoding UTF8` can write a UTF-8 BOM; JSON payloads should be written without BOM or `read_json` should be updated to support `utf-8-sig`.
+
+## June 20, 2026 Augusta GA validation — Free-Tier Fallback
+- `zen-studio/10times-events-scraper`, `santamaria-automations/eventbrite-scraper`, and `scraperlink/google-search-results-serp-scraper` all return **403 Forbidden on Apify free-tier accounts** — they require a paid subscription regardless of available credits.
+- `apify/google-search-scraper` (official Apify actor) **works on free-tier accounts** and returns full `organicResults` arrays.
+- The `run_apify_event_actor.py` script passes the raw JSON response which wraps results in a page object. Use `run_apify_google_serp.py` instead — it correctly extracts `organicResults` from each page object.
+- Augusta GA run: 5 queries × 10 results = 49 raw rows → 39 unique after dedupe. Cost: ~$0.02.
+- Dry-run first using `--dry-run` flag to verify payload format before spending credits.
+- Free-tier accounts identified by `plan.id == "FREE"` in `/v2/users/me` response. Check before running paid actors to avoid wasted 403 errors.

@@ -22,6 +22,37 @@ python scripts/normalize_events.py --input data/event-serp-results.csv --output 
 python scripts/dedupe_events.py --input reports/events-normalized.csv --output reports/events-deduped.csv
 ```
 
+## Free-Tier Fallback (No Paid Apify Subscription)
+
+Third-party Apify actors (`zen-studio/10times-events-scraper`, `santamaria-automations/eventbrite-scraper`, `scraperlink/google-search-results-serp-scraper`) return **403 on free-tier Apify accounts** — they require a paid subscription.
+
+**Check account tier first:**
+```powershell
+curl -s "https://api.apify.com/v2/users/me?token=$env:APIFY_API_TOKEN" | python -c "import sys,json; d=json.load(sys.stdin)['data']; print(d.get('plan',{}).get('id'))"
+```
+If output is `FREE`, skip to the fallback below.
+
+**Fallback: `scripts/run_apify_google_serp.py`**
+
+Uses the official `apify/google-search-scraper` (available on free tier) to run targeted Google searches and extract organic results. Output is compatible with the full normalize → dedupe → rank pipeline.
+
+```powershell
+python -m scripts.run_apify_google_serp `
+  --queries "BNI chapter Augusta GA 2026 networking meeting
+Augusta Metro Chamber of Commerce events 2026
+business networking events Augusta Georgia 2026
+chamber of commerce mixer Augusta GA" `
+  --output data/google-serp-results.csv `
+  --results-per-page 10
+
+python -m scripts.normalize_events --input data/google-serp-results.csv --output reports/events-normalized.csv
+python -m scripts.dedupe_events --input reports/events-normalized.csv --output reports/events-deduped.csv
+python -m scripts.rank_opportunities --input reports/events-deduped.csv --output reports/events-ranked.csv
+python -m scripts.generate_event_report --events reports/events-ranked.csv --contacts "" --output reports/final-report.md
+```
+
+**Cost:** ~$0.02 per 5-query run. Quality: returns organic Google results including BNI chapter detail pages, chamber event registrations, and local networking pages not surfaced by Tavily.
+
 ## Guardrails
 
 - Do not claim a complete attendee list when the source is gated, app-only, or LinkedIn-restricted.
