@@ -23,6 +23,7 @@ def generate_queries(
     people: list[str] | None = None,
     suburbs: list[str] | None = None,
     association_levels: list[str] | None = None,
+    known_associations: list[str] | None = None,
 ) -> list[dict[str, str]]:
     year = str(year or "").strip()
     queries: list[dict[str, str]] = []
@@ -129,6 +130,27 @@ def generate_queries(
                     f'"{niche}" "{term}" United States {year}'.strip(),
                     "Find national US association opportunities",
                 )
+    # Industry / trade association events — pass specific org names e.g. "PHCC", "ACCA", "NASBA"
+    for assoc in _clean(known_associations):
+        for term in ["annual conference", "annual meeting", "trade show", "expo", "convention", "events"]:
+            add(
+                "industry_trade_association",
+                f'"{assoc}" {term} {year}'.strip(),
+                f"Find {assoc} {term}",
+            )
+        if city:
+            add(
+                "industry_trade_association",
+                f'"{assoc}" chapter "{city}" {year}'.strip(),
+                f"Find local {assoc} chapter events in {city}",
+            )
+        if state:
+            add(
+                "industry_trade_association",
+                f'"{assoc}" "{state}" {year}'.strip(),
+                f"Find {assoc} events in {state}",
+            )
+
     return queries
 
 
@@ -147,12 +169,13 @@ def main():
     parser.add_argument("--people", nargs="*", default=[])
     parser.add_argument("--suburbs", nargs="*", default=[])
     parser.add_argument("--association-levels", nargs="*", default=[])
+    parser.add_argument("--known-associations", nargs="*", default=[])
     parser.add_argument("--output", default="")
     args = parser.parse_args()
     rows = generate_queries(
         args.niche, args.city, args.state, args.year, args.event_name, args.adjacent,
         args.asset_terms, args.official_domains, args.industry_publications, args.companies,
-        args.people, args.suburbs, args.association_levels,
+        args.people, args.suburbs, args.association_levels, args.known_associations,
     )
     if args.output:
         if args.output.lower().endswith(".json"):
