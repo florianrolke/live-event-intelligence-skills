@@ -3,7 +3,7 @@
 Primary low-cost sources:
 - `scraperlink/google-search-results-serp-scraper`: Google SERP lookup for profiles, Facebook, websites, and event pages.
 - `apify/google-search-scraper`: Google search results for focused event/contact queries. **Also the free-tier fallback — see Free-Tier Fallback section below.**
-- `zen-studio/10times-events-scraper`: conferences, trade shows, expos, exhibitions. Strong signal in Lainie run.
+- `zen-studio/10times-events-scraper`: conferences, trade shows, expos, exhibitions. Strong signal in a medical-tourism run.
 - `santamaria-automations/eventbrite-scraper`: tightly scoped Eventbrite events.
 - `powerai/eventbrite-events-scraper`: alternate Eventbrite search URL actor.
 
@@ -14,7 +14,7 @@ Secondary sources:
 - `crawlerbros/facebook-events-scraper`: known Facebook event URLs or page event listings.
 
 Avoid by default:
-- `techforce.global/all-events-scraper`: Lainie test cost $4 for 10 noisy results due actor-start/memory billing.
+- `techforce.global/all-events-scraper`: Test cost $4 for 10 noisy results due to actor-start/memory billing.
 
 Approval required:
 - LinkedIn participant scraping actors.

@@ -1,6 +1,6 @@
 ---
 name: finding-professional-association-events
-description: Find professional associations, trade groups, societies, chambers, BNI-style groups, event calendars, member directories, board members, event staff, and association-hosted conferences for local or niche prospecting. Use for Vincent-style association/event ecosystem research.
+description: Find professional associations, trade groups, societies, chambers, BNI-style groups, event calendars, member directories, board members, event staff, and association-hosted conferences for local or niche prospecting. Use for association and event ecosystem research in a defined niche and geography.
 ---
 
 # Finding Professional Association Events

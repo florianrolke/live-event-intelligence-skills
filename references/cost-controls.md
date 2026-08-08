@@ -7,7 +7,7 @@ Default behavior:
 - Store raw paid outputs under `data/` or `.tmp/` and keep normalized reports separate.
 
 Lessons from prior runs:
-- 10times produced high-value Lainie event data cheaply.
+- 10times produced high-value event data cheaply in the medical-tourism run.
 - Eventbrite can produce useful local networking results when scoped tightly.
 - Meetup was noisy for broad networking scans.
 - AllEvents cost more than expected and was noisy; avoid broad scans.

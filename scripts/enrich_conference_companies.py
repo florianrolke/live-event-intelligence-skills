@@ -135,16 +135,24 @@ def _slug_matches(person: str, url: str) -> bool:
     to a stranger. So the surname must appear in the profile slug or we drop
     the URL entirely.
     """
-    parts = [p for p in re.split(r"[\s,]+", person) if len(p) > 2]
-    if not parts:
+    # Drop credentials so "Cara McNulty, DPA" compares as "Cara McNulty".
+    cleaned = re.sub(
+        r"\b(PhD|MD|MBA|MPH|MSW|LCSW|RN|DO|PsyD|FAAP|DPA|JD|CPA|MS|MA)\b",
+        "", person, flags=re.I,
+    )
+    parts = [p for p in re.split(r"[\s,]+", cleaned) if len(p) > 1]
+    if len(parts) < 2:
         return False
     surname = re.sub(r"[^a-z]", "", parts[-1].lower())
     first = re.sub(r"[^a-z]", "", parts[0].lower())
     slug = re.sub(r"[^a-z]", "", url.rsplit("/", 1)[-1].lower())
-    if len(surname) < 3:
+    if len(surname) < 3 or len(first) < 2:
         return False
-    # Require the surname, and prefer that the first name is there too.
-    return surname in slug and (first[:3] in slug or len(surname) >= 6)
+    # BOTH names must be present. Surname alone is not enough: an uncommon
+    # surname is often an uncommon *family*, so "Alex Nana-Sinkam" happily
+    # matched "brian-nana-sinkam" — the right household, the wrong person, and
+    # a message that lands as obviously automated.
+    return surname in slug and first in slug
 
 
 def exa_find_linkedin(person: str, company: str) -> tuple[str, str]:
@@ -388,6 +396,71 @@ def enrich_one(row: dict, roles: list[str], want_emails: bool, verify: bool) -> 
     return results
 
 
+def run_linkedin_only(args) -> int:
+    """
+    Match LinkedIn profiles for people we already have names for.
+
+    A speaker list arrives complete — name, title, company, straight from the
+    conference's own site. There is nothing to discover, so the expensive
+    "who works here" step is wasted on it. This does the one thing that is
+    actually missing, using only Exa's free tier.
+    """
+    rows = read_csv(args.input)
+    targets = [r for r in rows if (r.get("person_name") or "").strip()]
+    if args.limit:
+        targets = targets[:args.limit]
+
+    if not _keys("EXA_API_KEY"):
+        print("This mode needs EXA_API_KEY. Free at https://exa.ai", file=sys.stderr)
+        return 1
+
+    print(f"Matching LinkedIn profiles for {len(targets)} known people")
+    started = time.time()
+    done: list[dict] = []
+
+    def one(row: dict) -> dict:
+        out = dict(row)
+        url, conf = exa_find_linkedin(
+            row.get("person_name", ""), row.get("organization", "")
+        )
+        if url:
+            out["linkedin_url"] = url
+            out["confidence"] = conf
+            out["next_action"] = "outreach"
+            out["evidence"] = compact_text(
+                f"{row.get('evidence','')} | LinkedIn matched, surname verified in slug"
+            )
+        else:
+            out["next_action"] = "find-linkedin-manually"
+        return out
+
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures = {pool.submit(one, r): r for r in targets}
+        for i, fut in enumerate(as_completed(futures), 1):
+            person = (futures[fut].get("person_name") or "?")[:32]
+            try:
+                r = fut.result()
+                done.append(r)
+                mark = "found" if r.get("linkedin_url") else "-"
+                print(f"  [{i}/{len(targets)}] {person:<34} {mark}")
+            except Exception as exc:
+                print(f"  [{i}/{len(targets)}] {person:<34} FAILED: {str(exc)[:50]}")
+                done.append(dict(futures[fut]))
+
+    # Keep any rows we did not touch (e.g. company-only rows) so the file stays whole.
+    touched = {(r.get("person_name") or "").lower() for r in done}
+    done.extend(r for r in rows
+                if (r.get("person_name") or "").lower() not in touched)
+
+    write_csv(args.output, done, CONTACT_FIELDS)
+    hits = sum(1 for r in done if (r.get("linkedin_url") or "").strip())
+    print(f"\n{'='*66}")
+    print(f"{len(done)} rows -> {args.output}")
+    print(f"  {hits} LinkedIn profiles matched and surname-verified")
+    print(f"  {time.time() - started:.0f}s, $0.00")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Enrich conference companies into named decision-makers",
@@ -402,10 +475,16 @@ def main() -> int:
     ap.add_argument("--verify-emails", dest="verify", action="store_true",
                     help="PAID: SMTP-verify each email before you send to it")
     ap.add_argument("--skip-known", action="store_true",
-                    help="Skip rows that already have a person_name (speakers)")
+                    help="Skip rows that already have a person_name (companies only)")
+    ap.add_argument("--linkedin-only", dest="linkedin_only", action="store_true",
+                    help="Rows already have names (e.g. a speaker list) — just find "
+                         "each person's LinkedIn URL. Free, and the fastest win available.")
     args = ap.parse_args()
 
     load_env()
+
+    if args.linkedin_only:
+        return run_linkedin_only(args)
 
     if not _keys("TAVILY_API_KEY"):
         print("No TAVILY_API_KEY set. Free at https://tavily.com — 1,000/month, no card.",
