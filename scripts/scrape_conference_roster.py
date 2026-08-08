@@ -227,7 +227,7 @@ def _strip_credentials(text: str) -> str:
     """
     Remove trailing credentials so a name stops looking like a job title.
 
-    "Amber Childs, PhD" contains "PhD", which is also a title word. Without
+    "Jordan Avery, PhD" contains "PhD", which is also a title word. Without
     this, the parser reads the name as a title and shifts the whole card up by
     one line — producing a row whose "name" is the previous speaker's employer.
     """
@@ -251,7 +251,7 @@ def extract_people(text: str, event_name: str, source_url: str, role_type: str) 
 
     2. Title-word heuristic. No anchor found, so look for a line that reads
        like a job title and take the line above as the name. Credentials are
-       stripped before the test so "Amber Childs, PhD" is not mistaken for one.
+       stripped before the test so "Jordan Avery, PhD" is not mistaken for one.
     """
     lines = [compact_text(l) for l in text.split("\n")]
     lines = [l for l in lines if l]
@@ -314,6 +314,10 @@ def extract_companies(page, text: str, event_name: str, source_url: str, role_ty
     """
     rows: list[dict] = []
     seen: set[str] = set()
+    # The organiser's own domain must not become a "sponsor". Derive it from the
+    # page we are reading rather than hardcoding one conference's host.
+    own_host = urlparse(source_url).netloc.replace("www.", "")
+    own_root = own_host.split(".")[0] if own_host else ""
     try:
         imgs = page.eval_on_selector_all(
             "img",
@@ -332,7 +336,7 @@ def extract_companies(page, text: str, event_name: str, source_url: str, role_ty
             name = re.sub(r"\s*(logo|icon|image|photo)\s*$", "", alt, flags=re.I).strip()
         if not name and href:
             host = urlparse(href).netloc
-            if host and "behavioralhealthtech" not in host and "." in host:
+            if host and own_root and own_root not in host and "." in host:
                 name = host.replace("www.", "").split(".")[0].replace("-", " ").title()
         key = name.lower()
         if not name or key in seen or len(name) < 3:
@@ -350,7 +354,7 @@ def extract_companies(page, text: str, event_name: str, source_url: str, role_ty
             "linkedin_url": "",
             "facebook_url": "",
             "instagram_url": "",
-            "website": href if href and "behavioralhealthtech" not in href else "",
+            "website": href if href and own_root and own_root not in href else "",
             "source": source_url,
             "confidence": "probable",
             "evidence": f"Logo on {source_url}",

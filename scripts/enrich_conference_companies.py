@@ -33,14 +33,14 @@ Usage
 -----
     # Free layers only: website, people, LinkedIn
     python -X utf8 -m scripts.enrich_conference_companies \\
-        --input data/bht2026-sponsors.csv \\
-        --output data/bht2026-enriched.csv \\
+        --input data/example-sponsors.csv \\
+        --output data/example-enriched.csv \\
         --roles "VP Marketing" "Head of Brand" "Chief Marketing Officer"
 
     # Add paid email discovery + SMTP verification
     python -X utf8 -m scripts.enrich_conference_companies \\
-        --input data/bht2026-sponsors.csv \\
-        --output data/bht2026-enriched.csv \\
+        --input data/example-sponsors.csv \\
+        --output data/example-enriched.csv \\
         --roles "VP Marketing" --emails --verify-emails --limit 25
 
 Always --limit first. Read the output. Then scale.
@@ -149,8 +149,8 @@ def _slug_matches(person: str, url: str) -> bool:
     if len(surname) < 3 or len(first) < 2:
         return False
     # BOTH names must be present. Surname alone is not enough: an uncommon
-    # surname is often an uncommon *family*, so "Alex Nana-Sinkam" happily
-    # matched "brian-nana-sinkam" — the right household, the wrong person, and
+    # surname is often an uncommon *family*, so "Alex Marchetti-Vaughn" happily
+    # matched "brian-marchetti-vaughn" — the right household, wrong person, and
     # a message that lands as obviously automated.
     return surname in slug and first in slug
 
