@@ -79,7 +79,24 @@ python -X utf8 -m scripts.build_event_binder \
 Output is plain HTML with the data inlined — no build step, no server, no dependencies.
 
 ### Step 5 — ship it
-Open `dist/example/index.html` locally, or drop the folder on Cloudflare Pages / Netlify for a link you can send. If the client list is private, put it behind a key in the URL and keep it out of search engines.
+Open `dist/example/index.html` locally, or deploy for a link you can send:
+
+```bash
+npx --yes wrangler@latest pages deploy dist/example     --project-name my-binder --branch main --commit-dirty=true
+```
+
+**To put it behind a key**, add a `_worker.js` at the root of the deploy folder
+and set a `DASHBOARD_KEY` environment variable on the Pages project. Access is
+then granted by `?k=<key>` in the URL (and a cookie for return visits).
+
+> Use `_worker.js`, **not** a `functions/_middleware.js`. Wrangler 4 silently
+> stops compiling the Pages `functions/` directory — it uploads your files, says
+> "Deployment complete", and serves the site with no gate at all. The only
+> visible difference is that a working deploy prints **"Compiled Worker
+> successfully"**. If you do not see that line, your site is public.
+
+Leave the key in the URL rather than stripping it, so one link works on every
+device the client opens it on.
 
 ## What you get
 
