@@ -1,3 +1,5 @@
+> **This repository has moved.** It now lives in the folder [`live-event-intelligence-skills`](https://github.com/florianrolke/community-resources/tree/main/live-event-intelligence-skills) of [florianrolke/community-resources](https://github.com/florianrolke/community-resources), together with all of Florian Rolke's community resources. This copy is archived (read-only) and stays online so existing links keep working. New fixes and updates happen in community-resources.
+
 # Live Event Intelligence Skills
 
 Reusable Codex skills and deterministic scripts for finding local or niche live events, mapping conference relationships, and producing outreach-ready event prospect reports.
